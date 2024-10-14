@@ -2,7 +2,7 @@
 
 To add environment variables and access the database please use the following:
 
-PGDATABASE=nc_news_development
+PGDATABASE=nc_news
 PGDATABASE=nc_news_test
 
 
