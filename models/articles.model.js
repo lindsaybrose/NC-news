@@ -8,7 +8,7 @@ const fetchArticleById = (article_id) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article does not exist" });
       }
-      return rows;
+      return rows[0];
     });
 };
 

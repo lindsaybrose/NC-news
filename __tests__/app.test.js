@@ -50,19 +50,17 @@ describe("/api/topics/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
-      .then((response) => {
-        expect(response.body.article[0].article_id).toBe(3);
-        expect(response.body.article[0].title).toBe(
+      .then(({ body }) => {
+        expect(body.article.article_id).toBe(3);
+        expect(body.article.title).toBe(
           "Eight pug gifs that remind me of mitch"
         );
-        expect(response.body.article[0].topic).toBe("mitch");
-        expect(response.body.article[0].author).toBe("icellusedkars");
-        expect(response.body.article[0].body).toBe("some gifs");
-        expect(response.body.article[0].created_at).toBe(
-          "2020-11-03T09:12:00.000Z"
-        );
-        expect(response.body.article[0].votes).toBe(0);
-        expect(response.body.article[0].article_img_url).toBe(
+        expect(body.article.topic).toBe("mitch");
+        expect(body.article.author).toBe("icellusedkars");
+        expect(body.article.body).toBe("some gifs");
+        expect(body.article.created_at).toBe("2020-11-03T09:12:00.000Z");
+        expect(body.article.votes).toBe(0);
+        expect(body.article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
       });
