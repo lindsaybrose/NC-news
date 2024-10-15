@@ -23,7 +23,7 @@ describe("/api", () => {
   });
 });
 
-describe("api/topics", () => {
+describe("/api/topics", () => {
   test("GET 200 - responds with endpoint containing an array of all topic objects", () => {
     return request(app)
       .get("/api/topics")
@@ -40,7 +40,47 @@ describe("api/topics", () => {
       .get("/api/topic")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("page not found");
+        expect(response.body.msg).toBe("Page not found");
+      });
+  });
+});
+
+describe("/api/topics/articles/:article_id", () => {
+  test("GET:200 - sends a single article to the client", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article[0].article_id).toBe(3);
+        expect(response.body.article[0].title).toBe(
+          "Eight pug gifs that remind me of mitch"
+        );
+        expect(response.body.article[0].topic).toBe("mitch");
+        expect(response.body.article[0].author).toBe("icellusedkars");
+        expect(response.body.article[0].body).toBe("some gifs");
+        expect(response.body.article[0].created_at).toBe(
+          "2020-11-03T09:12:00.000Z"
+        );
+        expect(response.body.article[0].votes).toBe(0);
+        expect(response.body.article[0].article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("GET:400 - sends 400 status and error message when given invalid id", () => {
+    return request(app)
+      .get("/api/articles/not_an_id")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("GET:404 - sends 404 status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/9999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist");
       });
   });
 });
