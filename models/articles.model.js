@@ -1,3 +1,4 @@
+const { normalizeQueryConfig } = require("pg/lib/utils");
 const db = require("../db/connection");
 const fs = require("fs/promises");
 
@@ -16,7 +17,7 @@ const fetchArticles = () => {
 
 const fetchArticleById = (article_id) => {
   return db
-    .query("SELECT * FROM ARTICLES WHERE article_id = $1", [article_id])
+    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article does not exist" });
@@ -25,4 +26,15 @@ const fetchArticleById = (article_id) => {
     });
 };
 
-module.exports = { fetchArticles, fetchArticleById };
+const fetchCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
+      [article_id]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
+
+module.exports = { fetchCommentsByArticleId, fetchArticles, fetchArticleById };
