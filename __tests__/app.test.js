@@ -11,7 +11,6 @@ afterAll(() => {
   return db.end();
 });
 
-
 describe("/api/topics", () => {
   test("GET 200 - responds with endpoint containing an array of all topic objects", () => {
     return request(app)
@@ -99,3 +98,67 @@ describe("/api/articles", () => {
       });
   });
 });
+describe("/api/articles/:article_id/comments", () => {
+  test("POST 201 - adds a comment to the stated article_id with a username and body key", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "lurker", body: "What a great article" })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          author: "lurker",
+          body: "What a great article",
+          article_id: 2,
+          votes: 0,
+          comment_id: expect.any(Number),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("POST 400 - reponds with Bad request when passed invalid article_id", () => {
+    return request(app)
+      .post("/api/articles/not_an_id/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 400 - reponds with Bad request when passed invalid article_id", () => {
+    return request(app)
+      .post("/api/articles/not_an_id/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .post("/api/articles/999/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist");
+      });
+  });
+  xtest("POST 400 - responds with Bad request when passed an object with missing properties", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ body: "What a great article" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  xtest("POST 400 - responds with Bad request when object inserted has the wrong datatype", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "lurker", body: "What a great article" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});
+
+//400 object missing properties
+//400 - wrong datatype in obj
+// user doesn't exist
