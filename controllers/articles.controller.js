@@ -1,7 +1,7 @@
 const {
-  fetchCommentsByArticleId,
   fetchArticles,
   fetchArticleById,
+  insertComment,
 } = require("../models/articles.model");
 
 function getArticles(request, response, next) {
@@ -25,18 +25,16 @@ function getArticleById(request, response, next) {
     });
 }
 
-function getCommentsByArticleId(request, response, next) {
+function postCommentsByArticle(request, response, next) {
+  const { username, body } = request.body;
   const { article_id } = request.params;
-  fetchArticleById(article_id)
-    .then(() => {
-      return fetchCommentsByArticleId(article_id);
-    })
-    .then((comments) => {
-      response.status(200).send({ comments });
+  insertComment(article_id, username, body)
+    .then((comment) => {
+      response.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);
     });
 }
 
-module.exports = { getCommentsByArticleId, getArticles, getArticleById };
+module.exports = { getArticles, getArticleById, postCommentsByArticle };

@@ -99,46 +99,66 @@ describe("/api/articles", () => {
   });
 });
 describe("/api/articles/:article_id/comments", () => {
-  test("GET 200 - responds with an array of comments from an article in descending order by date", () => {
+  test("POST 201 - adds a comment to the stated article_id with a username and body key", () => {
     return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
+      .post("/api/articles/2/comments")
+      .send({ username: "lurker", body: "What a great article" })
+      .expect(201)
       .then(({ body }) => {
-        expect(body.comments).toHaveLength(11);
-        expect(body.comments).toBeSortedBy("created_at", { descending: true });
-        body.comments.forEach((comment) => {
-          expect(comment.article_id).toBe(1);
-          expect(typeof comment.votes).toBe("number");
-          expect(typeof comment.created_at).toBe("string");
-          expect(typeof comment.author).toBe("string");
-          expect(typeof comment.comment_id).toBe("number");
-          expect(typeof comment.body).toBe("string");
+        expect(body.comment).toMatchObject({
+          author: "lurker",
+          body: "What a great article",
+          article_id: 2,
+          votes: 0,
+          comment_id: expect.any(Number),
+          created_at: expect.any(String),
         });
       });
   });
-  test("GET:404 - responds with 404 status and error message when given a valid but non-existent article_id", () => {
+  test("POST 400 - reponds with Bad request when passed invalid article_id", () => {
     return request(app)
-      .get("/api/articles/999/comments")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.msg).toBe("Article does not exist");
-      });
-  });
-  test("GET:400 - responds with 400 status and error message when given an invalid article_id", () => {
-    return request(app)
-      .get("/api/articles/not_an_id")
+      .post("/api/articles/not_an_id/comments")
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("GET: 200 - responds with an empty array when passed an article_id that is present in the database but has no comments", () => {
+  test("POST 400 - reponds with Bad request when passed invalid article_id", () => {
     return request(app)
-      .get("/api/articles/2/comments")
-      .expect(200)
-      .then(({ body }) => {
-        expect(Array.isArray(body.comments)).toBe(true);
-        expect(body.comments).toHaveLength(0);
+      .post("/api/articles/not_an_id/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .post("/api/articles/999/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist");
+      });
+  });
+  xtest("POST 400 - responds with Bad request when passed an object with missing properties", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ body: "What a great article" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  xtest("POST 400 - responds with Bad request when object inserted has the wrong datatype", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "lurker", body: "What a great article" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
       });
   });
 });
+
+//400 object missing properties
+//400 - wrong datatype in obj
+// user doesn't exist
