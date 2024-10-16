@@ -71,7 +71,7 @@ describe("/api/topics/articles/:article_id", () => {
   });
 });
 describe("/api/articles", () => {
-  test("GET 200 - responds with endpoint containing an array of all article objects in descending order by created_at", () => {
+  test("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
     return request(app)
       .get("/api/articles")
       .then(({ body }) => {
@@ -89,7 +89,7 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 404 - responds with 404-not found with invalid endpoint", () => {
+  test("GET 404 - responds with 'Page not found' with invalid endpoint", () => {
     return request(app)
       .get("/api/article")
       .expect(404)
