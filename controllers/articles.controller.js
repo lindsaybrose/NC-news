@@ -51,6 +51,7 @@ function patchNewVote(request, response, next) {
     });
 }
 
+
 module.exports = {
   getArticles,
   getArticleById,

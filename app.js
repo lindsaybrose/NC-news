@@ -5,8 +5,9 @@ const {
   getArticles,
   getArticleById,
   postCommentsByArticle,
-  patchNewVote
+  patchNewVote,
 } = require("./controllers/articles.controller");
+const { getCommentById, deleteCommentById} = require("./controllers/comments.controller")
 
 app.use(express.json());
 
@@ -20,6 +21,7 @@ app.post("/api/articles/:article_id/comments", postCommentsByArticle)
 
 app.patch("/api/articles/:article_id", patchNewVote)
 
+app.delete("/api/comments/:comment_id", deleteCommentById, getCommentById)
 
 app.use((err, request, response, next) => {
   if (err.code === "22P02") {
