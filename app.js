@@ -4,7 +4,8 @@ const { getTopics } = require("./controllers/topics.controller");
 const {
   getArticles,
   getArticleById,
-  postCommentsByArticle
+  postCommentsByArticle,
+  patchNewVote
 } = require("./controllers/articles.controller");
 
 app.use(express.json());
@@ -17,6 +18,9 @@ app.get("/api/articles/:article_id", getArticleById);
 
 app.post("/api/articles/:article_id/comments", postCommentsByArticle)
 
+app.patch("/api/articles/:article_id", patchNewVote)
+
+
 app.use((err, request, response, next) => {
   if (err.code === "22P02") {
     response.status(400).send({ msg: "Bad request" });
@@ -27,6 +31,13 @@ app.use((err, request, response, next) => {
 app.use((err, request, response, next) => {
   if (err.code === "23502") {
     response.status(404).send({ msg: "Article does not exist" });
+  }
+  next(err);
+});
+
+app.use((err, request, response, next) => {
+  if (err.code === "23503") {
+    response.status(404).send({ msg: "Username not valid" });
   }
   next(err);
 });

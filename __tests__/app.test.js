@@ -105,6 +105,7 @@ describe("/api/articles/:article_id/comments", () => {
       .send({ username: "lurker", body: "What a great article" })
       .expect(201)
       .then(({ body }) => {
+        console.log(body.comment);
         expect(body.comment).toMatchObject({
           author: "lurker",
           body: "What a great article",
@@ -113,14 +114,6 @@ describe("/api/articles/:article_id/comments", () => {
           comment_id: expect.any(Number),
           created_at: expect.any(String),
         });
-      });
-  });
-  test("POST 400 - reponds with Bad request when passed invalid article_id", () => {
-    return request(app)
-      .post("/api/articles/not_an_id/comments")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.msg).toBe("Bad request");
       });
   });
   test("POST 400 - reponds with Bad request when passed invalid article_id", () => {
@@ -151,14 +144,47 @@ describe("/api/articles/:article_id/comments", () => {
   xtest("POST 400 - responds with Bad request when object inserted has the wrong datatype", () => {
     return request(app)
       .post("/api/articles/2/comments")
-      .send({ username: "lurker", body: "What a great article" })
+      .send({ username: "Lindsay", body: "What a great article" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Username not valid");
+      });
+  });
+});
+describe("/api/articles/:article_id", () => {
+  test("PATCH 201 - adds a vote to the selected article by article_id", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: 1 })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          article_id: 3,
+          votes: 1,
+          created_at: "2020-11-03T09:12:00.000Z",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 400 - reponds with Bad request when passed invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/not_an_id")
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
+  test("PATCH 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist");
+      });
+  });
 });
-
-//400 object missing properties
-//400 - wrong datatype in obj
-// user doesn't exist
