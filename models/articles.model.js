@@ -37,4 +37,22 @@ const insertComment = (article_id, username, body) => {
     });
 };
 
-module.exports = { fetchArticles, fetchArticleById, insertComment };
+const updateVotes = (article_id, inc_vote, vote) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *",
+      [vote, article_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article does not exist" });
+      }
+      return rows[0];
+    });
+};
+module.exports = {
+  fetchArticles,
+  fetchArticleById,
+  insertComment,
+  updateVotes,
+};
