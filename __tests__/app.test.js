@@ -11,7 +11,6 @@ afterAll(() => {
   return db.end();
 });
 
-
 describe("/api/topics", () => {
   test("GET 200 - responds with endpoint containing an array of all topic objects", () => {
     return request(app)
@@ -72,7 +71,7 @@ describe("/api/topics/articles/:article_id", () => {
   });
 });
 describe("/api/articles", () => {
-  test("GET 200 - responds with endpoint containing an array of all article objects in descending order by created_at", () => {
+  test("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
     return request(app)
       .get("/api/articles")
       .then(({ body }) => {
@@ -90,12 +89,56 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 404 - responds with 404-not found with invalid endpoint", () => {
+  test("GET 404 - responds with 'Page not found' with invalid endpoint", () => {
     return request(app)
       .get("/api/article")
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Page not found");
+      });
+  });
+});
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200 - responds with an array of comments from an article in descending order by date", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toHaveLength(11);
+        expect(body.comments).toBeSortedBy("created_at", { descending: true });
+        body.comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1);
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.body).toBe("string");
+        });
+      });
+  });
+  test("GET:404 - responds with 404 status and error message when given a valid but non-existent article_id", () => {
+    return request(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article does not exist");
+      });
+  });
+  test("GET:400 - responds with 400 status and error message when given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/not_an_id")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("GET: 200 - responds with an empty array when passed an article_id that is present in the database but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments).toHaveLength(0);
       });
   });
 });
