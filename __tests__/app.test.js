@@ -188,3 +188,29 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+describe("/api/comments/:comment_id", () => {
+  test("DELETE 204 - removes selected comment by comment_id", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({body}) => {
+        expect(body).toMatchObject({});
+      });
+  });
+  test("DELETE 400 - reponds with Bad request when passed invalid article_id", () => {
+    return request(app)
+      .delete("/api/comments/not_an_id")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("DELETE 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment does not exist");
+      });
+  });
+})

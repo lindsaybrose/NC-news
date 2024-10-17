@@ -50,6 +50,8 @@ const updateVotes = (article_id, inc_vote, vote) => {
       return rows[0];
     });
 };
+
+
 module.exports = {
   fetchArticles,
   fetchArticleById,
