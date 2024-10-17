@@ -25,6 +25,16 @@ const fetchArticleById = (article_id) => {
       return rows[0];
     });
 };
+const fetchCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
+      [article_id]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
 
 const insertComment = (article_id, username, body) => {
   return db
@@ -40,4 +50,25 @@ const insertComment = (article_id, username, body) => {
     });
 };
 
-module.exports = { fetchArticles, fetchArticleById, insertComment };
+const updateVotes = (article_id, inc_vote, vote) => {
+  return db
+    .query(
+      "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *",
+      [vote, article_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article does not exist" });
+      }
+      return rows[0];
+    });
+};
+
+
+module.exports = {
+  fetchArticles,
+  fetchCommentsByArticleId,
+  fetchArticleById,
+  insertComment,
+  updateVotes,
+};

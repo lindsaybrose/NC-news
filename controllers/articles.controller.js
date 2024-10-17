@@ -1,7 +1,9 @@
 const {
   fetchArticles,
   fetchArticleById,
+  fetchCommentsByArticleId,
   insertComment,
+  updateVotes,
 } = require("../models/articles.model");
 
 function getArticles(request, response, next) {
@@ -25,6 +27,20 @@ function getArticleById(request, response, next) {
     });
 }
 
+function getCommentsByArticleId(request, response, next) {
+  const { article_id } = request.params;
+  fetchArticleById(article_id)
+    .then(() => {
+      return fetchCommentsByArticleId(article_id);
+    })
+    .then((comments) => {
+      response.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 function postCommentsByArticle(request, response, next) {
   const { username, body } = request.body;
   const { article_id } = request.params;
@@ -40,4 +56,24 @@ function postCommentsByArticle(request, response, next) {
     });
 }
 
-module.exports = { getArticles, getArticleById, postCommentsByArticle };
+function patchNewVote(request, response, next) {
+  const { inc_vote } = request.body;
+  const vote = Number(Object.values(request.body) )
+  const { article_id } = request.params;
+  updateVotes(article_id, inc_vote, vote)
+    .then((comment) => {
+      response.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+
+module.exports = {
+  getArticles,
+  getArticleById,
+  postCommentsByArticle,
+  getCommentsByArticleId,
+  patchNewVote
+};

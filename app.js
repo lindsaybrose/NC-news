@@ -4,8 +4,11 @@ const { getTopics } = require("./controllers/topics.controller");
 const {
   getArticles,
   getArticleById,
-  postCommentsByArticle
+  postCommentsByArticle,
+  patchNewVote,
+  getCommentsByArticleId
 } = require("./controllers/articles.controller");
+const { getCommentById, deleteCommentById} = require("./controllers/comments.controller")
 
 app.use(express.json());
 
@@ -16,6 +19,13 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.post("/api/articles/:article_id/comments", postCommentsByArticle)
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+
+app.patch("/api/articles/:article_id", patchNewVote)
+
+app.delete("/api/comments/:comment_id", deleteCommentById)
 
 app.use((err, request, response, next) => {
   if (err.code === "22P02" || err.code === "23502" || err.code === "23503") {
@@ -34,4 +44,5 @@ app.use((err, request, response, next) => {
 app.use("*", (request, response, next) => {
   response.status(404).send({ msg: "Page not found" });
 });
+
 module.exports = app;
