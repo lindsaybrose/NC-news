@@ -205,7 +205,7 @@ describe("/api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test.only("DELETE 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+  test("DELETE 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
     return request(app)
       .delete("/api/comments/999")
       .expect(404)
