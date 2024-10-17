@@ -149,7 +149,6 @@ describe("/api/articles/:article_id/comments", () => {
       .send({ username: "lurker", body: "What a great article" })
       .expect(201)
       .then(({ body }) => {
-        console.log(body.comment);
         expect(body.comment).toMatchObject({
           author: "lurker",
           body: "What a great article",
@@ -192,7 +191,7 @@ describe("/api/articles/:article_id/comments", () => {
       .send({ username: "Lindsay", body: "What a great article" })
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("Username not valid");
+        expect(response.body.msg).toBe("Bad request");
       });
   });
 });

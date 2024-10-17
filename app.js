@@ -22,7 +22,6 @@ app.post("/api/articles/:article_id/comments", postCommentsByArticle)
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
-
 app.patch("/api/articles/:article_id", patchNewVote)
 
 app.delete("/api/comments/:comment_id", deleteCommentById)
