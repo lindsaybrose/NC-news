@@ -210,7 +210,7 @@ describe("/api/comments/:comment_id", () => {
       .delete("/api/comments/999")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Comments do not exist");
+        expect(response.body.msg).toBe("Comment does not exist");
       });
   });
 })
