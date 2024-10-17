@@ -237,11 +237,11 @@ describe("/api/comments/:comment_id", () => {
     return request(app)
       .delete("/api/comments/1")
       .expect(204)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body).toMatchObject({});
       });
   });
-  test("DELETE 400 - reponds with Bad request when passed invalid article_id", () => {
+  test("DELETE 400 - responds with Bad request when passed invalid article_id", () => {
     return request(app)
       .delete("/api/comments/not_an_id")
       .expect(400)
@@ -257,4 +257,27 @@ describe("/api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Comment does not exist");
       });
   });
-})
+});
+describe("/api/users", () => {
+  test("GET 200 - reponsds with an array of objects of users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {    
+        expect(body.users).toHaveLength(4);
+        body.users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+  test("GET 404 - responds with 404-not found with invalid endpoint", () => {
+    return request(app)
+      .get("/api/user")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Page not found");
+      });
+  });
+});
