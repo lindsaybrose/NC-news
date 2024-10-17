@@ -18,15 +18,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.post("/api/articles/:article_id/comments", postCommentsByArticle)
 
 app.use((err, request, response, next) => {
-  if (err.code === "22P02") {
+  if (err.code === "22P02" || err.code === "23502" || err.code === "23503") {
     response.status(400).send({ msg: "Bad request" });
-  }
-  next(err);
-});
-
-app.use((err, request, response, next) => {
-  if (err.code === "23502") {
-    response.status(404).send({ msg: "Article does not exist" });
   }
   next(err);
 });

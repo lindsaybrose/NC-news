@@ -134,12 +134,13 @@ describe("/api/articles/:article_id/comments", () => {
   test("POST 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
     return request(app)
       .post("/api/articles/999/comments")
+      .send({ username: "lurker", body: "What a great article" })
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Article does not exist");
       });
   });
-  xtest("POST 400 - responds with Bad request when passed an object with missing properties", () => {
+  test("POST 400 - responds with Bad request when passed an object with missing properties", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send({ body: "What a great article" })
@@ -148,10 +149,10 @@ describe("/api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  xtest("POST 400 - responds with Bad request when object inserted has the wrong datatype", () => {
+  test("POST 400 - responds with Bad request when object inserted contains a non-existent user", () => {
     return request(app)
       .post("/api/articles/2/comments")
-      .send({ username: "lurker", body: "What a great article" })
+      .send({ username: 'Lindsay', body: "What a great article" })
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
