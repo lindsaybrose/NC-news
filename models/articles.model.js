@@ -25,6 +25,16 @@ const fetchArticleById = (article_id) => {
       return rows[0];
     });
 };
+const fetchCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
+      [article_id]
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
 
 const insertComment = (article_id, username, body) => {
   return db
@@ -54,6 +64,7 @@ const updateVotes = (article_id, inc_vote, vote) => {
 
 module.exports = {
   fetchArticles,
+  fetchCommentsByArticleId,
   fetchArticleById,
   insertComment,
   updateVotes,
