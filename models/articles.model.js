@@ -43,6 +43,9 @@ const insertComment = (article_id, username, body) => {
       [article_id, username, body]
     )
     .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article does not exist" });
+      }
       return rows[0];
     });
 };

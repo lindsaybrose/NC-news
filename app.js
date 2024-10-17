@@ -28,22 +28,8 @@ app.patch("/api/articles/:article_id", patchNewVote)
 app.delete("/api/comments/:comment_id", deleteCommentById)
 
 app.use((err, request, response, next) => {
-  if (err.code === "22P02") {
+  if (err.code === "22P02" || err.code === "23502" || err.code === "23503") {
     response.status(400).send({ msg: "Bad request" });
-  }
-  next(err);
-});
-
-app.use((err, request, response, next) => {
-  if (err.code === "23502") {
-    response.status(404).send({ msg: "Article does not exist" });
-  }
-  next(err);
-});
-
-app.use((err, request, response, next) => {
-  if (err.code === "23503") {
-    response.status(404).send({ msg: "Username not valid" });
   }
   next(err);
 });
