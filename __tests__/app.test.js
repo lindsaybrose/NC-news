@@ -71,7 +71,7 @@ describe("/api/topics/articles/:article_id", () => {
   });
 });
 describe("/api/articles", () => {
-  test("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
+  test.only("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
     return request(app)
       .get("/api/articles")
       .then(({ body }) => {
@@ -263,7 +263,7 @@ describe("/api/users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
-      .then(({ body }) => {    
+      .then(({ body }) => {
         expect(body.users).toHaveLength(4);
         body.users.forEach((user) => {
           expect(user).toHaveProperty("username");
@@ -278,6 +278,35 @@ describe("/api/users", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Page not found");
+      });
+  });
+});
+describe("/api/articles - sorted", () => {
+  // test("GET 200 - responds with articles sorted by specified column - created_by", () => {
+  //   return request(app)
+  //     .get("/api/articles?sort_by=created_at")
+  //     .expect(200)
+  //     .then(({ body }) => {
+  //       expect(body.articles).toHaveLength(13);
+  //       expect(body.articles).toBeSortedBy("created_at", { descending: true });
+  //     });
+  // });
+  // test("GET 200 - responds with articles sorted by specified column - votes", () => {
+  //   return request(app)
+  //     .get("/api/articles?sort_by=votes")
+  //     .expect(200)
+  //     .then(({ body }) => {
+  //       expect(body.articles).toHaveLength(13);
+  //       expect(body.articles).toBeSortedBy("votes", { descending: true });
+  //     });
+  // });
+  test("GET 200 - responds with articles sorted by specified column and specified order - ASC", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(13);
+        expect(body.articles).toBeSortedBy("votes", { descending: false });
       });
   });
 });
