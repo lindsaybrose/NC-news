@@ -317,4 +317,13 @@ describe("/api/articles - sorted", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
+  test("GET 400 - responds with Bad request when passed invalid order endpoint", () => {
+    return request(app)
+      .get("/api/articles?order=UP")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
 });
+
