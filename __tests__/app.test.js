@@ -71,9 +71,9 @@ describe("/api/topics/articles/:article_id", () => {
   });
 });
 describe("/api/articles", () => {
-  test.only("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
+  test("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles/?sort_by=created_at&order=desc")
       .then(({ body }) => {
         expect(body.articles).toHaveLength(13);
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
@@ -259,7 +259,7 @@ describe("/api/comments/:comment_id", () => {
   });
 });
 describe("/api/users", () => {
-  test("GET 200 - reponsds with an array of objects of users", () => {
+  test("GET 200 - reponds with an array of objects of users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -282,31 +282,39 @@ describe("/api/users", () => {
   });
 });
 describe("/api/articles - sorted", () => {
-  // test("GET 200 - responds with articles sorted by specified column - created_by", () => {
-  //   return request(app)
-  //     .get("/api/articles?sort_by=created_at")
-  //     .expect(200)
-  //     .then(({ body }) => {
-  //       expect(body.articles).toHaveLength(13);
-  //       expect(body.articles).toBeSortedBy("created_at", { descending: true });
-  //     });
-  // });
-  // test("GET 200 - responds with articles sorted by specified column - votes", () => {
-  //   return request(app)
-  //     .get("/api/articles?sort_by=votes")
-  //     .expect(200)
-  //     .then(({ body }) => {
-  //       expect(body.articles).toHaveLength(13);
-  //       expect(body.articles).toBeSortedBy("votes", { descending: true });
-  //     });
-  // });
+  test("GET 200 - responds with articles sorted by specified column - created_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(13);
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 200 - responds with articles sorted by specified column - votes", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(13);
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
   test("GET 200 - responds with articles sorted by specified column and specified order - ASC", () => {
     return request(app)
-      .get("/api/articles?sort_by=votes&order=ASC")
+      .get("/api/articles?sort_by=votes&order=asc")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toHaveLength(13);
         expect(body.articles).toBeSortedBy("votes", { descending: false });
+      });
+  });
+  test("GET 400 - responds with Bad request when passed invalid sort_by endpoint", () => {
+    return request(app)
+      .get("/api/articles?sort_by=*")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
       });
   });
 });

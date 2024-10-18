@@ -2,76 +2,12 @@ const { normalizeQueryConfig } = require("pg/lib/utils");
 const db = require("../db/connection");
 const fs = require("fs/promises");
 
-// const fetchArticles = (query = {sort_by: "created_at", order: "DESC"}) => {
-//   let sql = "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles, article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id"
-//   const validSortBys = ["article_id", "article_author", "title", "topic", "created_at", "votes"];
-//   let queryValues = []
-//   if (!validSortBys.includes(query.sort_by)) {
-//     return Promise.reject({ status: 400, msg: "Bad request" });
-//   }
-//   queryValues.push(query.sort_by)
-//   const sqlSortBy = sql + ` ORDER BY $1;", [${queryValues}]`
-//   console.log(sqlSortBy)
-//   return db
-//     .query(sqlSortBy, queryValues)
-//     .then(({ rows }) => {
-//       console.log(rows, 'rows')
-//       return rows;
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// // };
-// const allowedInputs = ["input1", "input2", "input3", "input4"];
-
-// let queryStr = `SELECT * FROM table_name`;
-// let queryValues = [];
-
-// if (!allowedInputs.includes(passed_in_value)) {
-//   return Promise.reject({ status: 404, msg: "Invalid Input" });
-// };
-
-// if (passed_in_value) {
-//   queryValues.push(passed_in_value);
-//   queryStr += `WHERE value = $1`;
-// };
-
-// const fetchArticles = (query = {sort_by: "created_at"}) => {
-//   let sql = "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles, article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id"
-//   const validSortBys = ["article_id", "article_author", "title", "topic", "created_at", "votes"];
-//   let queryValues = []
-//   if (!validSortBys.includes(query.sort_by)) {
-//     return Promise.reject({ status: 400, msg: "Bad request" });
-//   }
-//   if (query.sort_by) {
-//   queryValues.push(query.sort_by)
-//  sql += " ORDER BY $1 DESC;"}
-//  console.log(sql, queryValues)
-//  return db.query(`${sql}`, queryValues)
-//     .then(({ rows }) => {
-//       console.log(rows, 'rows')
-//       return rows;
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// };
-
 const fetchArticles = (query = { sort_by: "created_at", order: "DESC" }) => {
   let queryStr =
     "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id";
-  const validSortBys = [
-    "article_id",
-    "article_author",
-    "title",
-    "topic",
-    "created_at",
-    "votes",
-  ];
-
+  const validSortBys = ["article_id","article_author","title","topic","created_at","votes"];
   let queryValues = [];
   let queryValuesOrder = [];
-
   if (!validSortBys.includes(query.sort_by)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
@@ -84,7 +20,7 @@ const fetchArticles = (query = { sort_by: "created_at", order: "DESC" }) => {
       queryValuesOrder.push("DESC");
       queryStr += ` ${queryValuesOrder}`;
     } else {
-      queryValuesOrder.push(query.order);
+      queryValuesOrder.push(query.order.toUpperCase());
       queryStr += ` ${queryValuesOrder}`;
     }
   }
