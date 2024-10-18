@@ -1,7 +1,6 @@
 const { normalizeQueryConfig } = require("pg/lib/utils");
 const db = require("../db/connection");
 const fs = require("fs/promises");
-
 const fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
   const allowedInputs = [
     "article_id",
@@ -30,6 +29,7 @@ const fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
     queryStr += ` GROUP BY articles.article_id
   ORDER BY ${sort_by} ${order}`;
   }
+
   return db
     .query(`${queryStr}`)
     .then(({ rows }) => {
@@ -42,7 +42,10 @@ const fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
 
 const fetchArticleById = (article_id) => {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
+    .query(
+      `SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`,
+      [article_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Article does not exist" });
@@ -50,6 +53,7 @@ const fetchArticleById = (article_id) => {
       return rows[0];
     });
 };
+
 const fetchCommentsByArticleId = (article_id) => {
   return db
     .query(
