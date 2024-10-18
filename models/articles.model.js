@@ -2,44 +2,43 @@ const { normalizeQueryConfig } = require("pg/lib/utils");
 const db = require("../db/connection");
 const fs = require("fs/promises");
 
-// const fetchArticles = (query = { sort_by: "created_at", order: "DESC" }) => {
-//   let queryStr =
-//     "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id";
-//   const validSortBys = ["article_id","article_author","title","topic","created_at","votes"];
-//   let queryValues = [];
-//   let queryValuesOrder = [];
-//   if (query.topic) {
-//     queryValues.push(query.topic)
-//     queryStr += ` WHERE topic = ${query.topic};`
-//     console.log(queryStr)
-//   }
+const fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
+  const allowedInputs = [
+    "article_id",
+    "article_author",
+    "title",
+    "topic",
+    "created_at",
+    "votes",
+  ];
+  const allowedOrder = [
+    "asc",
+    "desc",
+    "ASC",
+    "DESC"
+  ]
+  if (!allowedInputs.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  if (!allowedOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  let queryStr =
+    "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id";
 
-//   if (!validSortBys.includes(query.sort_by)) {
-//     return Promise.reject({ status: 400, msg: "Bad request" });
-//   }
-
-//   if (query.sort_by) {
-//     queryValues.push(query.sort_by);
-//     queryStr += ` ORDER BY ${queryValues}`;
-//   }
-//   if (query.order || !query.order) {
-//     if (query.order === undefined) {
-//       queryValuesOrder.push("DESC");
-//       queryStr += ` ${queryValuesOrder}`;
-//     } else {
-//       queryValuesOrder.push(query.order.toUpperCase());
-//       queryStr += ` ${queryValuesOrder}`;
-//     }
-//   }
-//   return db
-//     .query(`${queryStr}`)
-//     .then(({ rows }) => {
-//       return rows;
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// };
+  let queryValues = [];
+  let queryValuesOrder = [];
+  queryStr += ` GROUP BY articles.article_id
+  ORDER BY ${sort_by} ${order}`;
+  return db
+    .query(`${queryStr}`)
+    .then(({ rows }) => {
+      return rows;
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 const fetchArticleById = (article_id) => {
   return db
@@ -90,85 +89,6 @@ const updateVotes = (article_id, inc_vote, vote) => {
     });
 };
 
-// const fetchArticles = (query = { sort_by: "created_at", order: "DESC" }) => {
-//   let queryStr =
-//     "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id";
-//   const validSortBys = ["article_id","article_author","title","topic","created_at","votes"];
-//   let queryValues = [];
-//   let queryValuesOrder = [];
-//   if (query.topic) {
-//     queryValues.push(query.topic)
-//     queryStr += ` WHERE topic = '${query.topic}' GROUP BY articles.article_id;`
-//   }
-
-//   if (!validSortBys.includes(query.sort_by)) {
-//     return Promise.reject({ status: 400, msg: "Bad request" });
-//   }
-//   console.log(queryStr)
-//   if (query.sort_by) {
-//     queryValues.push(query.sort_by);
-//     queryStr += ` GROUP BY articles.article_id ORDER BY ${queryValues}`;
-//   }
-//   if (query.order || !query.order) {
-//     if (query.order === undefined) {
-//       queryValuesOrder.push("DESC");
-//       queryStr += ` ${queryValuesOrder}`;
-//     } else {
-//       queryValuesOrder.push(query.order.toUpperCase());
-//       queryStr += ` ${queryValuesOrder}`;
-//     }
-//   }
-//   return db
-//     .query(`${queryStr};`)
-//     .then(({ rows }) => {
-//       console.log(rows)
-//       return rows;
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// };
-
-const fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
-  const allowedInputs = [
-    "article_id",
-    "article_author",
-    "title",
-    "topic",
-    "created_at",
-    "votes",
-  ];
-  const allowedOrder = [
-    "asc",
-    "desc",
-    "ASC",
-    "DESC"
-  ]
-  if (!allowedInputs.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
-  }
-  if (!allowedOrder.includes(order)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
-  }
-  let queryStr =
-    "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id";
-
-  let queryValues = [];
-  let queryValuesOrder = [];
-  queryStr += ` GROUP BY articles.article_id
-  ORDER BY ${sort_by} ${order}`;
-
-  console.log(queryStr);
-  return db
-    .query(`${queryStr}`)
-    .then(({ rows }) => {
-      console.log(rows);
-      return rows;
-    })
-    .catch((err) => {
-      next(err);
-    });
-};
 
 module.exports = {
   fetchArticles,
