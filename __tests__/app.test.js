@@ -48,6 +48,7 @@ describe("/api/topics/articles/:article_id", () => {
         expect(body.article.body).toBe("some gifs");
         expect(body.article.created_at).toBe("2020-11-03T09:12:00.000Z");
         expect(body.article.votes).toBe(0);
+        expect(body.article.comment_count).toBe("2");
         expect(body.article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
@@ -73,7 +74,7 @@ describe("/api/topics/articles/:article_id", () => {
 describe("/api/articles", () => {
   test("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
     return request(app)
-      .get("/api/articles/?sort_by=created_at&order=desc")
+      .get("/api/articles")
       .then(({ body }) => {
         expect(body.articles).toHaveLength(13);
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
