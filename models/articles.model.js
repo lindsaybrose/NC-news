@@ -2,11 +2,30 @@ const { normalizeQueryConfig } = require("pg/lib/utils");
 const db = require("../db/connection");
 const fs = require("fs/promises");
 
-const fetchArticles = () => {
+const fetchArticles = (query = { sort_by: "created_at", order: "DESC" }) => {
+  let queryStr =
+    "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id";
+  const validSortBys = ["article_id","article_author","title","topic","created_at","votes"];
+  let queryValues = [];
+  let queryValuesOrder = [];
+  if (!validSortBys.includes(query.sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  if (query.sort_by) {
+    queryValues.push(query.sort_by);
+    queryStr += ` ORDER BY ${queryValues}`;
+  }
+  if (query.order || !query.order) {
+    if (query.order === undefined) {
+      queryValuesOrder.push("DESC");
+      queryStr += ` ${queryValuesOrder}`;
+    } else {
+      queryValuesOrder.push(query.order.toUpperCase());
+      queryStr += ` ${queryValuesOrder}`;
+    }
+  }
   return db
-    .query(
-      "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles, article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY created_at DESC;"
-    )
+    .query(`${queryStr}`)
     .then(({ rows }) => {
       return rows;
     })
@@ -63,7 +82,6 @@ const updateVotes = (article_id, inc_vote, vote) => {
       return rows[0];
     });
 };
-
 
 module.exports = {
   fetchArticles,

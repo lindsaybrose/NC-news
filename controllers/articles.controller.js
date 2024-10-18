@@ -7,7 +7,8 @@ const {
 } = require("../models/articles.model");
 
 function getArticles(request, response, next) {
-  fetchArticles()
+  const query = request.query;
+  fetchArticles(query)
     .then((articles) => {
       response.status(200).send({ articles: articles });
     })
@@ -58,7 +59,7 @@ function postCommentsByArticle(request, response, next) {
 
 function patchNewVote(request, response, next) {
   const { inc_vote } = request.body;
-  const vote = Number(Object.values(request.body) )
+  const vote = Number(Object.values(request.body));
   const { article_id } = request.params;
   updateVotes(article_id, inc_vote, vote)
     .then((comment) => {
@@ -69,11 +70,10 @@ function patchNewVote(request, response, next) {
     });
 }
 
-
 module.exports = {
   getArticles,
   getArticleById,
   postCommentsByArticle,
   getCommentsByArticleId,
-  patchNewVote
+  patchNewVote,
 };
