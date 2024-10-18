@@ -11,25 +11,25 @@ const fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
     "created_at",
     "votes",
   ];
-  const allowedOrder = [
-    "asc",
-    "desc",
-    "ASC",
-    "DESC"
-  ]
+  const allowedOrder = ["asc", "desc", "ASC", "DESC"];
+
   if (!allowedInputs.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   if (!allowedOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
+
   let queryStr =
     "SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.article_id) AS comment_count  FROM articles  LEFT OUTER JOIN comments ON comments.article_id = articles.article_id";
-
   let queryValues = [];
   let queryValuesOrder = [];
-  queryStr += ` GROUP BY articles.article_id
+  if (topic) {
+    queryStr += ` WHERE topic = '${topic}' GROUP BY articles.article_id`;
+  } else {
+    queryStr += ` GROUP BY articles.article_id
   ORDER BY ${sort_by} ${order}`;
+  }
   return db
     .query(`${queryStr}`)
     .then(({ rows }) => {
@@ -88,7 +88,6 @@ const updateVotes = (article_id, inc_vote, vote) => {
       return rows[0];
     });
 };
-
 
 module.exports = {
   fetchArticles,
