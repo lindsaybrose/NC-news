@@ -26,7 +26,7 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.get("/api/users", getUsers);
 
-app.post("/api/articles/:article_id/comments", postCommentsByArticle);
+app.post("/api/articles/:article_id", postCommentsByArticle);
 
 app.patch("/api/articles/:article_id", patchNewVote);
 

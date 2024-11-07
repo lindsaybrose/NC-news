@@ -12,7 +12,7 @@ afterAll(() => {
 });
 
 describe("/api/topics", () => {
-  test("GET 200 - responds with endpoint containing an array of all topic objects", () => {
+  test("GET: 200 - responds with endpoint containing an array of all topic objects", () => {
     return request(app)
       .get("/api/topics")
       .then(({ body }) => {
@@ -23,7 +23,7 @@ describe("/api/topics", () => {
         });
       });
   });
-  test("GET 404 - responds with 404-not found with invalid endpoint", () => {
+  test("GET: 404 - responds with 404-not found with invalid endpoint", () => {
     return request(app)
       .get("/api/topic")
       .expect(404)
@@ -34,7 +34,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/topics/articles/:article_id", () => {
-  test("GET:200 - responds with a single article to the client", () => {
+  test("GET: 200 - responds with a single article to the client", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
@@ -54,7 +54,7 @@ describe("/api/topics/articles/:article_id", () => {
         );
       });
   });
-  test("GET:400 - responds with 400 status and error message when given invalid id", () => {
+  test("GET: 400 - responds with 400 status and error message when given invalid id", () => {
     return request(app)
       .get("/api/articles/not_an_id")
       .expect(400)
@@ -62,7 +62,7 @@ describe("/api/topics/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("GET:404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+  test("GET: 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/9999")
       .expect(404)
@@ -72,7 +72,7 @@ describe("/api/topics/articles/:article_id", () => {
   });
 });
 describe("/api/articles", () => {
-  test("GET 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
+  test("GET: 200 - responds with endpoint containing an array of all article objects in descending order by date", () => {
     return request(app)
       .get("/api/articles")
       .then(({ body }) => {
@@ -90,7 +90,7 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 404 - responds with 'Page not found' with invalid endpoint", () => {
+  test("GET: 404 - responds with 'Page not found' with invalid endpoint", () => {
     return request(app)
       .get("/api/article")
       .expect(404)
@@ -100,7 +100,7 @@ describe("/api/articles", () => {
   });
 });
 describe("/api/articles/:article_id/comments", () => {
-  test("GET 200 - responds with an array of comments from an article in descending order by date", () => {
+  test("GET: 200 - responds with an array of comments from an article in descending order by date", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -117,7 +117,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("GET:404 - responds with 404 status and error message when given a valid but non-existent article_id", () => {
+  test("GET: 404 - responds with 404 status and error message when given a valid but non-existent article_id", () => {
     return request(app)
       .get("/api/articles/999/comments")
       .expect(404)
@@ -125,7 +125,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Article does not exist");
       });
   });
-  test("GET:400 - responds with 400 status and error message when given an invalid article_id", () => {
+  test("GET: 400 - responds with 400 status and error message when given an invalid article_id", () => {
     return request(app)
       .get("/api/articles/not_an_id")
       .expect(400)
@@ -144,7 +144,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 describe("/api/articles/:article_id/comments", () => {
-  test("POST 201 - adds a comment to the stated article_id with a username and body key", () => {
+  test("POST: 201 - adds a comment to the stated article_id with a username and body key", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send({ username: "lurker", body: "What a great article" })
@@ -160,7 +160,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("POST 400 - reponds with Bad request when passed invalid article_id", () => {
+  test("POST: 400 - reponds with Bad request when passed invalid article_id", () => {
     return request(app)
       .post("/api/articles/not_an_id/comments")
       .expect(400)
@@ -168,7 +168,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("POST 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+  test("POST: 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
     return request(app)
       .post("/api/articles/999/comments")
       .send({ username: "lurker", body: "What a great article" })
@@ -177,7 +177,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Article does not exist");
       });
   });
-  test("POST 400 - responds with Bad request when passed an object with missing properties", () => {
+  test("POST: 400 - responds with Bad request when passed an object with missing properties", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send({ body: "What a great article" })
@@ -186,7 +186,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("POST 400 - responds with Bad request when object inserted contains a non-existent user", () => {
+  test("POST: 400 - responds with Bad request when object inserted contains a non-existent user", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send({ username: "Lindsay", body: "What a great article" })
@@ -197,7 +197,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 describe("/api/articles/:article_id", () => {
-  test("PATCH 201 - adds a vote to the selected article by article_id", () => {
+  test("PATCH: 201 - adds a vote to the selected article by article_id", () => {
     return request(app)
       .patch("/api/articles/3")
       .send({ inc_votes: 1 })
@@ -216,7 +216,7 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
-  test("PATCH 400 - reponds with Bad request when passed invalid article_id", () => {
+  test("PATCH: 400 - reponds with Bad request when passed invalid article_id", () => {
     return request(app)
       .patch("/api/articles/not_an_id")
       .expect(400)
@@ -224,7 +224,7 @@ describe("/api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("PATCH 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+  test("PATCH: 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
     return request(app)
       .patch("/api/articles/999")
       .expect(404)
@@ -234,7 +234,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 describe("/api/comments/:comment_id", () => {
-  test("DELETE 204 - removes selected comment by comment_id", () => {
+  test("DELETE: 204 - removes selected comment by comment_id", () => {
     return request(app)
       .delete("/api/comments/1")
       .expect(204)
@@ -242,7 +242,7 @@ describe("/api/comments/:comment_id", () => {
         expect(body).toMatchObject({});
       });
   });
-  test("DELETE 400 - responds with Bad request when passed invalid article_id", () => {
+  test("DELETE: 400 - responds with Bad request when passed invalid article_id", () => {
     return request(app)
       .delete("/api/comments/not_an_id")
       .expect(400)
@@ -250,7 +250,7 @@ describe("/api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("DELETE 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
+  test("DELETE: 404 - responds with 404 status and error message when given a valid but non-existent id", () => {
     return request(app)
       .delete("/api/comments/999")
       .expect(404)
@@ -260,7 +260,7 @@ describe("/api/comments/:comment_id", () => {
   });
 });
 describe("/api/users", () => {
-  test("GET 200 - reponds with an array of objects of users", () => {
+  test("GET: 200 - reponds with an array of objects of users", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -273,7 +273,7 @@ describe("/api/users", () => {
         });
       });
   });
-  test("GET 404 - responds with 404-not found with invalid endpoint", () => {
+  test("GET: 404 - responds with 404-not found with invalid endpoint", () => {
     return request(app)
       .get("/api/user")
       .expect(404)
@@ -283,7 +283,7 @@ describe("/api/users", () => {
   });
 });
 describe("/api/articles - sorted", () => {
-  test("GET 200 - responds with articles sorted by specified column - created_by", () => {
+  test("GET: 200 - responds with articles sorted by specified column - created_by", () => {
     return request(app)
       .get("/api/articles?sort_by=created_at")
       .expect(200)
@@ -292,7 +292,7 @@ describe("/api/articles - sorted", () => {
         expect(body.articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("GET 200 - responds with articles sorted by specified column - votes", () => {
+  test("GET: 200 - responds with articles sorted by specified column - votes", () => {
     return request(app)
       .get("/api/articles?sort_by=votes")
       .expect(200)
@@ -301,7 +301,7 @@ describe("/api/articles - sorted", () => {
         expect(body.articles).toBeSortedBy("votes", { descending: true });
       });
   });
-  test("GET 200 - responds with articles sorted by specified column and specified order - ASC", () => {
+  test("GET: 200 - responds with articles sorted by specified column and specified order - ASC", () => {
     return request(app)
       .get("/api/articles?sort_by=votes&order=asc")
       .expect(200)
@@ -310,7 +310,7 @@ describe("/api/articles - sorted", () => {
         expect(body.articles).toBeSortedBy("votes", { descending: false });
       });
   });
-  test("GET 400 - responds with Bad request when passed invalid sort_by endpoint", () => {
+  test("GET: 400 - responds with Bad request when passed invalid sort_by endpoint", () => {
     return request(app)
       .get("/api/articles?sort_by=*")
       .expect(400)
@@ -318,7 +318,7 @@ describe("/api/articles - sorted", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-  test("GET 400 - responds with Bad request when passed invalid order endpoint", () => {
+  test("GET: 400 - responds with Bad request when passed invalid order endpoint", () => {
     return request(app)
       .get("/api/articles?order=UP")
       .expect(400)
@@ -328,7 +328,7 @@ describe("/api/articles - sorted", () => {
   });
 });
 describe("/api/articles - topic", () => {
-  test("GET 200 - responds with articles filtered by topic", () => {
+  test("GET: 200 - responds with articles filtered by topic", () => {
     return request(app)
       .get("/api/articles?topic=cats")
       .expect(200)
